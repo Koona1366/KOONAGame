@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KOONA LOTO - Entry</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('https://i.postimg.cc/8CFNvM1j/wood-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #333;
+    }
+    h1 {
+      color: #ff6d00;
+      font-size: 38px;
+      margin-bottom: 20px;
+    }
+    .profile-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    #profileImage {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #ff9800;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    #connectBtn { background-color: #1e88e5; color: white; }
+    #depositBtn, #withdrawBtn { background-color: #43a047; color: white; }
+    #playBtn { background-color: #ff6d00; color: white; font-weight: bold; }
+    #walletAddress {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #222;
+    }
+    input[type="file"] { margin-top: 5px; }
+    input[type="text"] {
+      padding: 6px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>KOONA LOTO</h1>
+  <div class="profile-section">
+    <img id="profileImage" src="https://i.postimg.cc/RV3NnYML/avatar-default.png" alt="Avatar" />
+    <input type="file" accept="image/*" onchange="uploadImage(event)" />
+    <input type="text" id="playerName" placeholder="Enter your name" />
+    <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+    <button id="depositBtn" onclick="depositTokens()">Deposit KOONA</button>
+    <button id="withdrawBtn" onclick="withdrawTokens()">Withdraw KOONA</button>
+    <p id="walletAddress"></p>
+    <button id="playBtn" onclick="goToNextStage()">Play</button>
+  </div>  
+
+  <script>
+    const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";
+    const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4";
+
+    const tokenABI = [
+      "function balanceOf(address) view returns (uint256)",
+      "function decimals() view returns (uint8)",
+      "function approve(address spender, uint amount) returns (bool)"
+    ];
+
+    const contractABI = [
+      "function deposit(uint256 amount) public",
+      "function withdraw(uint256 amount) public"
+    ];
+
+    let provider, signer, userAddress, tokenContract, gameContract, decimals;
+
+    async function connectWallet() {
+      if (!window.ethereum) return alert("Please install MetaMask.");
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      userAddress = await signer.getAddress();
+      document.getElementById("walletAddress").innerText = "Wallet: " + userAddress;
+
+      tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+      gameContract = new ethers.Contract(contractAddress, contractABI, signer);
+      decimals = await tokenContract.decimals();
+    }
+
+    async function depositTokens() {
+      if (!signer) return alert("Please connect your wallet.");
+      const amount = prompt("Enter amount to deposit (KOONA):");
+      if (!amount) return;
+      const amt = ethers.utils.parseUnits(amount, decimals);
+      try {
+        const approveTx = await tokenContract.approve(contractAddress, amt);
+        await approveTx.wait();
+        const depositTx = await gameContract.deposit(amt);
+        await depositTx.wait();
+        alert("Deposit successful!");
+      } catch (err) {
+        alert("Deposit failed: " + err.message);
+      }
+    }
+
+    async function withdrawTokens() {
+      if (!signer) return alert("Please connect your wallet.");
+      const amount = prompt("Enter amount to withdraw (KOONA):");
+      if (!amount) return;
+      const amt = ethers.utils.parseUnits(amount, decimals);
+      try {
+        const tx = await gameContract.withdraw(amt);
+        await tx.wait();
+        alert("Withdrawal successful!");
+      } catch (err) {
+        alert("Withdrawal failed: " + err.message);
+      }
+    }
+
+    function goToNextStage() {
+      const name = document.getElementById("playerName").value;
+      if (!name || !userAddress) return alert("Please enter your name and connect wallet.");
+      localStorage.setItem("playerName", name);
+      localStorage.setItem("walletAddress", userAddress);
+      window.location.href = "stage2.html"; // ? ???? ???? ??? ????? ??
+    }
+
+    function uploadImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("profileImage").src = e.target.result;
+        localStorage.setItem("profileImage", e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    window.addEventListener("load", () => {
+      const savedImg = localStorage.getItem("profileImage");
+      if (savedImg) document.getElementById("profileImage").src = savedImg;
+    });
+  </script>
+</body>
+</html>
