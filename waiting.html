@@ -57,6 +57,7 @@
       font-weight: bold;
       font-size: 14px;
       color: #444;
+      word-break: break-word;
     }
 
     @media (max-width: 600px) {
@@ -85,44 +86,77 @@
 
   <div class="player-list" id="playerList"></div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
   <script>
-    const playerNames = ["AKO", "Samin", "Yara", "Navid", "Rojan", "Aram", "Lila", "Rebaz", "Kavin"];
-    const players = [];
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get("room") || "room_1";
     const maxPlayers = 6;
 
-    function addRandomPlayer() {
-      if (players.length >= maxPlayers) return;
+    const user = {
+      wallet: localStorage.getItem("walletAddress") || "UnknownWallet",
+      name: localStorage.getItem("playerName") || "Player",
+      avatar: localStorage.getItem("profileImage") || `https://i.pravatar.cc/60?u=${Math.random()}`
+    };
 
-      const available = playerNames.filter(name => !players.includes(name));
-      const newName = available[Math.floor(Math.random() * available.length)];
-      players.push(newName);
-      updatePlayerList();
-    }
-
-    function updatePlayerList() {
-      document.getElementById("count").innerText = players.length;
-      const container = document.getElementById("playerList");
-      container.innerHTML = "";
-      players.forEach((name, i) => {
-        const div = document.createElement("div");
-        div.className = "player-card";
-        div.innerHTML = `
-          <img src="https://i.pravatar.cc/60?u=${name}" alt="avatar" />
-          <span>${name}</span>
-        `;
-        container.appendChild(div);
+    function joinRoom() {
+      const playerRef = db.ref(`rooms/${roomId}/players/${user.wallet}`);
+      playerRef.set({
+        name: user.name,
+        avatar: user.avatar,
+        joinedAt: Date.now()
       });
-
-      if (players.length === maxPlayers) {
-        setTimeout(() => {
-          alert("Game ready! Redirecting...");
-          window.location.href = "game.html"; // change as needed
-        }, 1500);
-      }
+      playerRef.onDisconnect().remove();
     }
 
-    // Add one player every 1.5 seconds
-    setInterval(addRandomPlayer, 1500);
+    function listenPlayers() {
+      const playersRef = db.ref(`rooms/${roomId}/players`);
+      playersRef.on("value", snapshot => {
+        const players = snapshot.val() || {};
+        const playerKeys = Object.keys(players);
+        document.getElementById("count").innerText = playerKeys.length;
+
+        const container = document.getElementById("playerList");
+        container.innerHTML = "";
+
+        playerKeys.forEach(key => {
+          const p = players[key];
+          const div = document.createElement("div");
+          div.className = "player-card";
+          div.innerHTML = `
+            <img src="${p.avatar}" alt="avatar" />
+            <span title="${key}">${p.name}</span>
+          `;
+          container.appendChild(div);
+        });
+
+        if (playerKeys.length >= maxPlayers) {
+          setTimeout(() => {
+            alert("Game ready! Redirecting...");
+            window.location.href = "game.html";
+          }, 1000);
+        }
+      });
+    }
+
+    window.onload = () => {
+      joinRoom();
+      listenPlayers();
+    };
   </script>
 </body>
 </html>

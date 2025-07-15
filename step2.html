@@ -41,32 +41,6 @@
       margin-top: 30px;
     }
 
-    .table-item {
-      background: #fff8e1;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border: 1px solid #ffb74d;
-    }
-
-    .table-item span {
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .table-item button {
-      background: #4caf50;
-      color: white;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
     @media (max-width: 500px) {
       .container {
         padding: 20px 15px;
@@ -79,14 +53,6 @@
       select, button {
         font-size: 14px;
         padding: 10px;
-      }
-
-      .table-item span {
-        font-size: 14px;
-      }
-
-      .table-item button {
-        font-size: 12px;
       }
     }
   </style>
@@ -105,47 +71,48 @@
     </select>
 
     <button onclick="createTable()">Create Table (5% fee)</button>
-
-    <div class="table-list" id="tableList"></div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
   <script>
-    const feeReceiver = "0x3C126D42EfdA7250aB2d6c1669ad90D4e2726Ca6";
-    const tableList = [];
+    // ??????? Firebase ???? ?? ????? ????
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     function createTable() {
       const amount = parseInt(document.getElementById("amount").value);
-      const fee = amount * 0.05;
-      const netAmount = amount - fee;
+      const tableId = "room_" + Date.now();
 
-      const tableId = Date.now();
-      tableList.push({ id: tableId, amount });
-      updateTableList();
+      const wallet = localStorage.getItem("walletAddress") || "UnknownWallet";
+      const name = localStorage.getItem("playerName") || "Player";
+      const avatar = localStorage.getItem("profileImage") || `https://i.pravatar.cc/60?u=${Math.random()}`;
 
-      alert(`Created table: ${amount} KOONA\nFee sent to ${feeReceiver}`);
-    }
-
-    function updateTableList() {
-      const list = document.getElementById("tableList");
-      list.innerHTML = "";
-
-      tableList.forEach(table => {
-        const div = document.createElement("div");
-        div.className = "table-item";
-        div.innerHTML = `
-          <span>${table.amount} KOONA</span>
-          <button onclick="joinTable(${table.id})">Join</button>
-        `;
-        list.appendChild(div);
+      const roomRef = db.ref(`rooms/${tableId}`);
+      roomRef.set({
+        amount,
+        createdAt: Date.now()
       });
-    }
 
-    function joinTable(id) {
-      const table = tableList.find(t => t.id === id);
-      if (table) {
-        alert(`Joining table: ${table.amount} KOONA`);
-        window.location.href = "step3.html";
-      }
+      db.ref(`rooms/${tableId}/players/${wallet}`).set({
+        name,
+        avatar,
+        joinedAt: Date.now()
+      });
+
+      // ???? ?? ???? ?????? ?? ??????? ???
+      window.location.href = `waiting-room.html?room=${tableId}`;
     }
   </script>
 </body>
