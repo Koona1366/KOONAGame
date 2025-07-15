@@ -78,7 +78,6 @@
       word-break: break-word;
     }
 
-    /* ---- ?? ?????? ? ???? ---- */
     @media (max-width: 500px) {
       .box {
         width: 100%;
@@ -134,15 +133,22 @@
 
     async function connectWallet() {
       if (!window.ethereum) return alert("Please install MetaMask.");
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = provider.getSigner();
-      userAddress = await signer.getAddress();
-      document.getElementById("walletAddress").innerText = "Wallet: " + userAddress;
+      try {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
 
-      tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
-      gameContract = new ethers.Contract(contractAddress, contractABI, signer);
-      decimals = await tokenContract.decimals();
+        document.getElementById("walletAddress").innerText = "Wallet: " + userAddress;
+        localStorage.setItem("walletAddress", userAddress); // ????? ???
+
+        tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+        gameContract = new ethers.Contract(contractAddress, contractABI, signer);
+        decimals = await tokenContract.decimals();
+      } catch (err) {
+        alert("Wallet connection failed.");
+        console.error(err);
+      }
     }
 
     async function depositTokens() {
@@ -200,6 +206,11 @@
 
       const savedName = localStorage.getItem("playerName");
       if (savedName) document.getElementById("playerName").value = savedName;
+
+      const savedWallet = localStorage.getItem("walletAddress");
+      if (savedWallet) {
+        document.getElementById("walletAddress").innerText = "Wallet: " + savedWallet;
+      }
     });
   </script>
 </body>
