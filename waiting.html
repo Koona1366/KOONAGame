@@ -2,51 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Waiting Room</title>
+  <title>KOONA LOTO - Waiting Room</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: #f3e5ab;
+      background-color: #FBA92C;
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 30px 10px;
+      padding: 20px;
       text-align: center;
+      color: #333;
     }
+
     h1 {
-      color: #d2691e;
       font-size: 32px;
+      color: #fff;
       margin-bottom: 10px;
     }
+
     p {
       font-size: 18px;
-      color: #444;
+      margin-bottom: 20px;
+      color: #fff;
     }
-    #player-list {
-      margin-top: 30px;
+
+    .player-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .player-card {
+      background-color: #fff;
+      border-radius: 12px;
+      width: 100px;
+      padding: 12px 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
     }
-    .player-card {
-      background: #fff8e1;
-      border: 2px solid #ffa726;
-      border-radius: 12px;
-      width: 80%;
-      max-width: 300px;
-      padding: 12px 20px;
-      font-size: 20px;
+
+    .player-card img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 8px;
+      border: 2px solid #FBA92C;
+    }
+
+    .player-card span {
       font-weight: bold;
-      box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
-      animation: slideIn 0.4s ease;
+      font-size: 14px;
+      color: #444;
     }
-    @keyframes slideIn {
-      from {
-        transform: translateY(-20px);
-        opacity: 0;
+
+    @media (max-width: 600px) {
+      .player-card {
+        width: 80px;
       }
-      to {
-        transform: translateY(0);
-        opacity: 1;
+
+      .player-card img {
+        width: 50px;
+        height: 50px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      p {
+        font-size: 16px;
       }
     }
   </style>
@@ -54,43 +82,47 @@
 <body>
   <h1>Waiting for Players...</h1>
   <p>Players joined: <span id="count">0</span> / 6</p>
-  <div id="player-list"></div>
+
+  <div class="player-list" id="playerList"></div>
 
   <script>
+    const playerNames = ["AKO", "Samin", "Yara", "Navid", "Rojan", "Aram", "Lila", "Rebaz", "Kavin"];
     const players = [];
     const maxPlayers = 6;
 
     function addRandomPlayer() {
-      const names = ["AKO", "Samin", "Farid", "Yara", "Lale", "Navid", "Amir", "Roya"];
-      const newPlayer = names[Math.floor(Math.random() * names.length)] + " #" + (Math.floor(Math.random() * 100));
-      players.push(newPlayer);
-      updateList();
+      if (players.length >= maxPlayers) return;
+
+      const available = playerNames.filter(name => !players.includes(name));
+      const newName = available[Math.floor(Math.random() * available.length)];
+      players.push(newName);
+      updatePlayerList();
     }
 
-    function updateList() {
+    function updatePlayerList() {
       document.getElementById("count").innerText = players.length;
-      const list = document.getElementById("player-list");
-      list.innerHTML = "";
-      players.forEach(name => {
+      const container = document.getElementById("playerList");
+      container.innerHTML = "";
+      players.forEach((name, i) => {
         const div = document.createElement("div");
         div.className = "player-card";
-        div.innerText = name;
-        list.appendChild(div);
+        div.innerHTML = `
+          <img src="https://i.pravatar.cc/60?u=${name}" alt="avatar" />
+          <span>${name}</span>
+        `;
+        container.appendChild(div);
       });
 
       if (players.length === maxPlayers) {
         setTimeout(() => {
-          alert("6 players ready! Starting the game...");
-          window.location.href = "game.html";
-        }, 1000);
+          alert("Game ready! Redirecting...");
+          window.location.href = "game.html"; // change as needed
+        }, 1500);
       }
     }
 
-    setInterval(() => {
-      if (players.length < maxPlayers) {
-        addRandomPlayer();
-      }
-    }, 1500);
+    // Add one player every 1.5 seconds
+    setInterval(addRandomPlayer, 1500);
   </script>
 </body>
 </html>

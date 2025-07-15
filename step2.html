@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KOONA - Join a Table</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #FBA92C;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 25px 20px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+      text-align: center;
+      color: #e65100;
+      margin-bottom: 20px;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .table-list {
+      margin-top: 30px;
+    }
+
+    .table-item {
+      background: #fff8e1;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #ffb74d;
+    }
+
+    .table-item span {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .table-item button {
+      background: #4caf50;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      select, button {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      .table-item span {
+        font-size: 14px;
+      }
+
+      .table-item button {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Choose Your Table</h1>
+
+    <select id="amount">
+      <option value="100">100 KOONA</option>
+      <option value="200">200 KOONA</option>
+      <option value="500">500 KOONA</option>
+      <option value="1000">1000 KOONA</option>
+      <option value="5000">5000 KOONA</option>
+      <option value="10000">10000 KOONA</option>
+    </select>
+
+    <button onclick="createTable()">Create Table (5% fee)</button>
+
+    <div class="table-list" id="tableList"></div>
+  </div>
+
+  <script>
+    const feeReceiver = "0x3C126D42EfdA7250aB2d6c1669ad90D4e2726Ca6";
+    const tableList = [];
+
+    function createTable() {
+      const amount = parseInt(document.getElementById("amount").value);
+      const fee = amount * 0.05;
+      const netAmount = amount - fee;
+
+      const tableId = Date.now();
+      tableList.push({ id: tableId, amount });
+      updateTableList();
+
+      alert(`Created table: ${amount} KOONA\nFee sent to ${feeReceiver}`);
+    }
+
+    function updateTableList() {
+      const list = document.getElementById("tableList");
+      list.innerHTML = "";
+
+      tableList.forEach(table => {
+        const div = document.createElement("div");
+        div.className = "table-item";
+        div.innerHTML = `
+          <span>${table.amount} KOONA</span>
+          <button onclick="joinTable(${table.id})">Join</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function joinTable(id) {
+      const table = tableList.find(t => t.id === id);
+      if (table) {
+        alert(`Joining table: ${table.amount} KOONA`);
+        window.location.href = "step3.html";
+      }
+    }
+  </script>
+</body>
+</html>

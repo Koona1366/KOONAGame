@@ -1,337 +1,308 @@
-<!DOCTYPE html>  
-<html lang="en">  
-<head>  
-  <meta charset="UTF-8" />  
-  <title>KOONA LOTO</title>  
-  <style>  
-    body {  
-      background: #fff6ec;  
-      font-family: Arial, sans-serif;  
-      text-align: center;  
-      padding: 20px;  
-    }  
-    h1 {  
-      color: #ff6d00;  
-      font-size: 36px;  
-      margin-bottom: 10px;  
-    }  
-    .player-profiles {  
-      display: flex;  
-      justify-content: center;  
-      gap: 15px;  
-      margin-bottom: 20px;  
-      flex-wrap: wrap;  
-    }  
-    .player {  
-      display: flex;  
-      flex-direction: column;  
-      align-items: center;  
-      width: 60px;  
-      position: relative;  
-    }  
-    .lights {  
-      position: absolute;  
-      top: -18px;  
-      display: flex;  
-      gap: 3px;  
-    }  
-    .light {  
-      width: 10px;  
-      height: 10px;  
-      background-color: #ccc;  
-      border-radius: 50%;  
-      border: 1px solid #999;  
-    }  
-    .light.on {  
-      background-color: #4caf50;  
-    }  
-    .player img {  
-      width: 50px;  
-      height: 50px;  
-      border-radius: 50%;  
-      border: 2px solid #ff6d00;  
-    }  
-    .player-name {  
-      font-size: 12px;  
-      margin-top: 5px;  
-    }  
-    .balls-container {  
-      display: flex;  
-      justify-content: center;  
-      gap: 12px;  
-      margin-bottom: 20px;  
-      flex-wrap: wrap;  
-    }  
-    .ball {  
-      width: 50px;  
-      height: 50px;  
-      background-color: #ff6d00;  
-      color: white;  
-      font-weight: bold;  
-      font-size: 18px;  
-      display: flex;  
-      align-items: center;  
-      justify-content: center;  
-      border-radius: 50%;  
-    }  
-    .cards-wrapper {  
-      display: flex;  
-      flex-direction: column;  
-      align-items: center;  
-      gap: 25px;  
-    }  
-    .card {  
-      background: #fffaf5;  
-      border: 2px solid #ffab40;  
-      border-radius: 10px;  
-      padding: 10px;  
-    }  
-    .card table {  
-      border-collapse: collapse;  
-    }  
-    .card td {  
-      width: 40px;  
-      height: 40px;  
-      font-size: 18px;  
-      text-align: center;  
-      vertical-align: middle;  
-      border: 1px solid #ffcc80;  
-      cursor: pointer;  
-      user-select: none;  
-    }  
-    .card td.crossed {  
-      background-color: #ffe0b2;  
-      text-decoration: line-through;  
-    }  
-    .ok-btn {  
-      margin-top: 8px;  
-      padding: 5px 10px;  
-      background: #4caf50;  
-      color: white;  
-      border: none;  
-      border-radius: 6px;  
-      display: none;  
-      cursor: pointer;  
-    }  
-    #winners {  
-      margin-top: 30px;  
-      font-size: 20px;  
-      color: #d84315;  
-      white-space: pre-line;  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KOONA LOTO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #FBA92C;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      text-align: center;
+    }
+    h1 {
+      color: white;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .player-profiles {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .player {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .player img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 3px solid white;
+    }
+    .player.you img {
+      width: 70px;
+      height: 70px;
+      border: 4px solid #1e88e5;
+    }
+    .player-name {
+      font-size: 12px;
+      color: #fff;
+      margin-top: 5px;
+    }
+    .lights {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 5px;
+    }
+    .light {
+      width: 10px;
+      height: 10px;
+      background: #ccc;
+      border-radius: 50%;
+      border: 1px solid #999;
+    }
+    .light.on {
+      background: #4caf50;
+    }
+    .balls-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .ball {
+      width: 50px;
+      height: 50px;
+      background: white;
+      color: #1e88e5;
+      font-weight: bold;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 2px solid #1e88e5;
+    }
+    .cards-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .card {
+      background: #fff;
+      border: 3px solid #1e88e5;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    table {
+      border-collapse: collapse;
+    }
+    td {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    td.crossed::after {
+      content: '';
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      top: 6px;
+      left: 6px;
+      background: #2196f3;
+      border-radius: 50%;
+      z-index: 1;
+    }
+    td.crossed {
+      color: white;
+      text-decoration: line-through;
+      position: relative;
+      z-index: 2;
+    }
+    td.missed {
+      background: #f44336;
+      color: white;
+      text-decoration: line-through;
+    }
+    .ok-btn {
+      margin-top: 8px;
+      padding: 5px 10px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      display: block;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 24px; }
+      .ball { width: 40px; height: 40px; font-size: 16px; }
+      td { width: 30px; height: 30px; font-size: 14px; }
+      .card { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>KOONA LOTO</h1>
+  <div class="player-profiles" id="players"></div>
+  <div class="balls-container" id="balls"></div>
+  <div class="cards-wrapper" id="cards"></div>
+
+  <script>
+    const playerNames = ["You", "Samin", "Farid", "Lale", "Yara", "Navid"];
+    const playerId = 0;
+    let lightsMap = {};
+    let claimedRows = new Set();
+    let drawnNumbers = [];
+    let allNumbers = Array.from({ length: 90 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+    let gameOver = false;
+
+    function renderPlayers() {
+      const container = document.getElementById("players");
+      playerNames.forEach((name, i) => {
+        const div = document.createElement("div");
+        div.className = "player" + (i === playerId ? " you" : "");
+        div.innerHTML = `
+          <div class="lights" id="lights-${i}">
+            <div class="light" id="p${i}-l0"></div>
+            <div class="light" id="p${i}-l1"></div>
+            <div class="light" id="p${i}-l2"></div>
+          </div>
+          <img src="https://i.pravatar.cc/50?u=${i}" />
+          <div class="player-name">${name}</div>
+        `;
+        container.appendChild(div);
+        lightsMap[i] = 0;
+      });
     }
 
-    /* ????????? ????? ?????? */
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 26px;
+    function generateCard() {
+      const columns = [[1,9],[10,19],[20,29],[30,39],[40,49],[50,59],[60,69],[70,79],[80,90]];
+      const cols = columns.map(([min,max]) => {
+        let nums = [];
+        for(let i=min; i<=max; i++) nums.push(i);
+        return nums.sort(() => Math.random() - 0.5);
+      });
+      const rows = [[],[],[]];
+      for(let r=0; r<3; r++) {
+        let indices = [...Array(9).keys()].sort(() => Math.random() - 0.5).slice(0,5).sort((a,b) => a-b);
+        for(let c=0; c<9; c++) {
+          if(indices.includes(c)) {
+            let val;
+            do {
+              val = cols[c].pop();
+            } while(rows.flat().includes(val));
+            rows[r][c] = val;
+          } else {
+            rows[r][c] = "";
+          }
+        }
       }
-      .player {
-        width: 50px;
-      }
-      .lights {
-        top: -15px;
-        gap: 2px;
-      }
-      .light {
-        width: 8px;
-        height: 8px;
-      }
-      .player img {
-        width: 40px;
-        height: 40px;
-      }
-      .player-name {
-        font-size: 10px;
-      }
-      .balls-container {
-        gap: 8px;
-      }
-      .ball {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
-      }
-      .card {
-        padding: 8px;
-      }
-      .card td {
-        width: 30px;
-        height: 30px;
-        font-size: 14px;
-      }
-      .ok-btn {
-        padding: 4px 8px;
-        font-size: 12px;
-      }
-      #winners {
-        font-size: 16px;
+      return rows;
+    }
+
+    function renderCards() {
+      const wrapper = document.getElementById("cards");
+      for(let i=0; i<3; i++) {
+        const rows = generateCard();
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "card";
+        const table = document.createElement("table");
+        rows.forEach((row, rowIndex) => {
+          const tr = document.createElement("tr");
+          row.forEach(cell => {
+            const td = document.createElement("td");
+            td.innerText = cell;
+            td.dataset.card = i;
+            td.dataset.row = rowIndex;
+            td.dataset.value = cell;
+            td.addEventListener("click", handleCellClick);
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+        cardDiv.appendChild(table);
+        wrapper.appendChild(cardDiv);
       }
     }
-  </style>  
-</head>  
-<body>  
-  <h1>KOONA LOTO</h1>  
-  <div class="player-profiles" id="players"></div>  
-  <div class="balls-container" id="balls"></div>  
-  <div class="cards-wrapper" id="cards"></div>  
-  <div id="winners"></div>  
-  
-  <script>  
-    const playerNames = ["AKO", "Samin", "Farid", "Lale", "Yara", "Navid"];  
-    const playerId = 0;  
-    let lightsMap = {};  
-    let claimedRows = new Set();  
-    let drawnNumbers = [];  
-    let allNumbers = Array.from({ length: 90 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);  
-    let gameOver = false;  
-    let winner1 = null, winner2 = null;  
-    let ballInterval;  
-  
-    function renderPlayers() {  
-      const container = document.getElementById("players");  
-      playerNames.forEach((name, i) => {  
-        const div = document.createElement("div");  
-        div.className = "player";  
-        div.innerHTML = `  
-          <div class="lights" id="lights-${i}">  
-            <div class="light" id="p${i}-l0"></div>  
-            <div class="light" id="p${i}-l1"></div>  
-            <div class="light" id="p${i}-l2"></div>  
-          </div>  
-          <img src="https://i.pravatar.cc/50?u=${i}" />  
-          <div class="player-name">${name}</div>  
-        `;  
-        container.appendChild(div);  
-        lightsMap[i] = 0;  
-      });  
-    }  
-  
-    function generateCard() {  
-      const columns = [[1,9],[10,19],[20,29],[30,39],[40,49],[50,59],[60,69],[70,79],[80,90]];  
-      const cols = columns.map(([min,max]) => {  
-        let nums = [];  
-        for(let i = min; i <= max; i++) nums.push(i);  
-        return nums.sort(() => Math.random() - 0.5);  
-      });  
-      const rows = [[],[],[]];  
-      for(let r=0; r<3; r++) {  
-        let indices = [...Array(9).keys()].sort(() => Math.random() - 0.5).slice(0,5).sort((a,b) => a-b);  
-        for(let c=0; c<9; c++) {  
-          if(indices.includes(c)) {  
-            let val;  
-            do {  
-              val = cols[c].pop();  
-            } while(rows.flat().includes(val));  
-            rows[r][c] = val;  
-          } else {  
-            rows[r][c] = "";  
-          }  
-        }  
-      }  
-      return rows;  
-    }  
-  
-    function renderCards() {  
-      const wrapper = document.getElementById("cards");  
-      for(let c=0; c<3; c++) {  
-        const rows = generateCard();  
-        const cardDiv = document.createElement("div");  
-        cardDiv.className = "card";  
-  
-        const okBtn = document.createElement("button");  
-        okBtn.className = "ok-btn";  
-        okBtn.textContent = "OK";  
-        okBtn.onclick = () => claimLight(okBtn.dataset.key);  
-        cardDiv.appendChild(okBtn);  
-  
-        const table = document.createElement("table");  
-        rows.forEach((row, rowIndex) => {  
-          const tr = document.createElement("tr");  
-          row.forEach(cell => {  
-            const td = document.createElement("td");  
-            td.innerText = cell;  
-            td.dataset.card = c;  
-            td.dataset.row = rowIndex;  
-            td.addEventListener("click", handleCellClick);  
-            tr.appendChild(td);  
-          });  
-          table.appendChild(tr);  
-        });  
-        cardDiv.appendChild(table);  
-        wrapper.appendChild(cardDiv);  
-      }  
-    }  
-  
-    function handleCellClick(e) {  
-      const td = e.target;  
-      const val = parseInt(td.innerText);  
-      if (isNaN(val) || td.classList.contains("crossed") || gameOver) return;  
-      if (drawnNumbers.includes(val)) {  
-        td.classList.add("crossed");  
-        checkRowCompletion();  
-      } else {  
-        alert("??? ??? ???? ????? ????!");  
-      }  
-    }  
-  
-    function checkRowCompletion() {  
-      document.querySelectorAll(".card").forEach((cardDiv, cardIndex) => {  
-        const rows = cardDiv.querySelectorAll("tr");  
-        rows.forEach((row, rowIndex) => {  
-          const tds = Array.from(row.querySelectorAll("td"));  
-          const filled = tds.filter(td => td.innerText !== "");  
-          const crossed = tds.filter(td => td.classList.contains("crossed"));  
-          const key = `${playerId}-${cardIndex}-${rowIndex}`;  
-          if (filled.length === crossed.length && !claimedRows.has(key)) {  
-            const okBtn = cardDiv.querySelector(".ok-btn");  
-            okBtn.style.display = "inline-block";  
-            okBtn.dataset.key = key;  
-          }  
-        });  
-      });  
-    }  
-  
-    function claimLight(key) {  
-      if (gameOver || claimedRows.has(key)) return;  
-      claimedRows.add(key);  
-  
-      const count = lightsMap[playerId]++;  
-      if (count <= 2) {  
-        document.getElementById(`p${playerId}-l${count}`).classList.add("on");  
-      }  
-  
-      if (count === 1 && !winner2) {  
-        winner2 = playerId;  
-        document.getElementById("winners").innerText = `?? ????? ?????: ${playerNames[playerId]}`;  
-      }  
-      else if (count === 2 && !winner1) {  
-        winner1 = playerId;  
-        document.getElementById("winners").innerText += `\n?? ????? ?????: ${playerNames[playerId]}`;  
-        gameOver = true;  
-        clearInterval(ballInterval);  
-      }  
-  
-      document.querySelectorAll(".ok-btn").forEach(btn => btn.style.display = "none");  
-    }  
-  
-    function showNextBall() {  
-      if (gameOver || allNumbers.length === 0) return;  
-      const num = allNumbers.pop();  
-      drawnNumbers.push(num);  
-      if (drawnNumbers.length > 5) drawnNumbers.shift();  
-      const container = document.getElementById("balls");  
-      container.innerHTML = "";  
-      drawnNumbers.forEach(n => {  
-        const div = document.createElement("div");  
-        div.className = "ball";  
-        div.innerText = n;  
-        container.appendChild(div);  
-      });  
-    }  
-  
-    renderPlayers();  
-    renderCards();  
-    ballInterval = setInterval(showNextBall, 3000);  
-  </script>  
-</body>  
+
+    function handleCellClick(e) {
+      const td = e.target;
+      const val = parseInt(td.innerText);
+      if (isNaN(val) || td.classList.contains("crossed") || gameOver) return;
+      if (drawnNumbers.includes(val)) {
+        td.classList.add("crossed");
+        checkRowCompletion();
+      } else {
+        alert("Number not drawn yet!");
+      }
+    }
+
+    function checkRowCompletion() {
+      document.querySelectorAll(".card").forEach((cardDiv, cardIndex) => {
+        const rows = cardDiv.querySelectorAll("tr");
+        rows.forEach((row, rowIndex) => {
+          const tds = Array.from(row.querySelectorAll("td"));
+          const filled = tds.filter(td => td.innerText !== "");
+          const crossed = tds.filter(td => td.classList.contains("crossed"));
+          const key = `${playerId}-${cardIndex}-${rowIndex}`;
+          if (filled.length === crossed.length && !claimedRows.has(key)) {
+            claimedRows.add(key);
+            const count = lightsMap[playerId]++;
+            if (count <= 2) {
+              document.getElementById(`p${playerId}-l${count}`).classList.add("on");
+            }
+
+            // OK button
+            let okBtn = cardDiv.querySelector(".ok-btn");
+            if (!okBtn) {
+              okBtn = document.createElement("button");
+              okBtn.className = "ok-btn";
+              okBtn.textContent = "OK";
+              okBtn.onclick = () => okBtn.remove();
+              cardDiv.appendChild(okBtn);
+            }
+
+            // Game over if third light is on
+            if (lightsMap[playerId] === 3) {
+              gameOver = true;
+              alert("?? Game Over! You completed all rows.");
+            }
+          }
+        });
+      });
+    }
+
+    function showNextBall() {
+      if (gameOver || allNumbers.length === 0) return;
+      const num = allNumbers.pop();
+      drawnNumbers.push(num);
+      const container = document.getElementById("balls");
+      const ball = document.createElement("div");
+      ball.className = "ball";
+      ball.innerText = num;
+      container.appendChild(ball);
+      if (container.childNodes.length > 5) container.removeChild(container.firstChild);
+
+      // 20s delay for missed marking
+      setTimeout(() => {
+        if (gameOver) return;
+        document.querySelectorAll("td").forEach(td => {
+          if (parseInt(td.innerText) === num && !td.classList.contains("crossed")) {
+            td.classList.add("missed");
+          }
+        });
+      }, 20000);
+    }
+
+    renderPlayers();
+    renderCards();
+    setInterval(showNextBall, 4000);
+  </script>
+</body>
 </html>
