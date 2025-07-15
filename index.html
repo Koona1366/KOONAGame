@@ -132,22 +132,27 @@
     let provider, signer, userAddress, tokenContract, gameContract, decimals;
 
     async function connectWallet() {
-      if (!window.ethereum) return alert("Please install MetaMask.");
+      if (typeof window.ethereum === 'undefined') {
+        alert("MetaMask not found. Please install MetaMask.");
+        return;
+      }
+
       try {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
+        provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         await provider.send("eth_requestAccounts", []);
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
 
         document.getElementById("walletAddress").innerText = "Wallet: " + userAddress;
-        localStorage.setItem("walletAddress", userAddress); // ????? ???
+        localStorage.setItem("walletAddress", userAddress);
 
         tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
         gameContract = new ethers.Contract(contractAddress, contractABI, signer);
         decimals = await tokenContract.decimals();
+
       } catch (err) {
-        alert("Wallet connection failed.");
-        console.error(err);
+        console.error("Connect Error:", err);
+        alert("Wallet connection failed. " + (err.message || ""));
       }
     }
 
