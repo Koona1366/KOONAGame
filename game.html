@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>KOONA LOTO</title>
@@ -22,7 +21,7 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 15px;
+      margin: 25px 0 15px;
     }
     .player {
       display: flex;
@@ -37,9 +36,9 @@
       border: 3px solid white;
     }
     .player.you img {
-      width: 70px;
-      height: 70px;
-      border: 4px solid #1e88e5;
+      width: 65px;
+      height: 65px;
+      border: 3px solid #1e88e5;
     }
     .player-name {
       font-size: 12px;
@@ -64,17 +63,17 @@
     .balls-container {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
     }
     .ball {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       background: white;
       color: #1e88e5;
       font-weight: bold;
-      font-size: 20px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -85,23 +84,25 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 10px;
+      margin-top: 10px;
     }
     .card {
       background: #fff;
-      border: 3px solid #1e88e5;
+      border: 2px solid #1e88e5;
       border-radius: 10px;
-      padding: 10px;
+      padding: 6px;
+      transform: scale(0.9);
     }
     table {
       border-collapse: collapse;
     }
     td {
-      width: 40px;
-      height: 40px;
+      width: 28px;
+      height: 28px;
       text-align: center;
       vertical-align: middle;
-      font-size: 18px;
+      font-size: 14px;
       border: 1px solid #ccc;
       cursor: pointer;
       user-select: none;
@@ -110,10 +111,10 @@
     td.crossed::after {
       content: '';
       position: absolute;
-      width: 28px;
-      height: 28px;
-      top: 6px;
-      left: 6px;
+      width: 20px;
+      height: 20px;
+      top: 4px;
+      left: 4px;
       background: #2196f3;
       border-radius: 50%;
       z-index: 1;
@@ -130,20 +131,22 @@
       text-decoration: line-through;
     }
     .ok-btn {
-      margin-top: 8px;
-      padding: 5px 10px;
+      margin-top: 5px;
+      padding: 4px 8px;
       background: #4caf50;
       color: white;
       border: none;
       border-radius: 6px;
       display: block;
       cursor: pointer;
+      font-size: 13px;
     }
-    @media (max-width: 600px) {
-      h1 { font-size: 24px; }
-      .ball { width: 40px; height: 40px; font-size: 16px; }
-      td { width: 30px; height: 30px; font-size: 14px; }
-      .card { padding: 8px; }
+    @media (max-width: 500px) {
+      h1 { font-size: 22px; }
+      .ball { width: 32px; height: 32px; font-size: 14px; }
+      td { width: 24px; height: 24px; font-size: 12px; }
+      .player.you img { width: 58px; height: 58px; }
+      .card { transform: scale(0.88); }
     }
   </style>
 </head>
@@ -151,9 +154,7 @@
   <h1>KOONA LOTO</h1>
   <div class="player-profiles" id="players"></div>
   <div class="balls-container" id="balls"></div>
-  <div class="cards-wrapper" id="cards"></div>
-
-  <script>
+  <div class="cards-wrapper" id="cards"></div>  <script>
     const playerNames = ["You", "Samin", "Farid", "Lale", "Yara", "Navid"];
     const playerId = 0;
     let lightsMap = {};
@@ -257,8 +258,6 @@
             if (count <= 2) {
               document.getElementById(`p${playerId}-l${count}`).classList.add("on");
             }
-
-            // OK button
             let okBtn = cardDiv.querySelector(".ok-btn");
             if (!okBtn) {
               okBtn = document.createElement("button");
@@ -267,8 +266,6 @@
               okBtn.onclick = () => okBtn.remove();
               cardDiv.appendChild(okBtn);
             }
-
-            // Game over if third light is on
             if (lightsMap[playerId] === 3) {
               gameOver = true;
               alert("?? Game Over! You completed all rows.");
@@ -289,7 +286,6 @@
       container.appendChild(ball);
       if (container.childNodes.length > 5) container.removeChild(container.firstChild);
 
-      // 20s delay for missed marking
       setTimeout(() => {
         if (gameOver) return;
         document.querySelectorAll("td").forEach(td => {
@@ -303,6 +299,5 @@
     renderPlayers();
     renderCards();
     setInterval(showNextBall, 4000);
-  </script>
-</body>
+  </script></body>
 </html>
