@@ -5,7 +5,6 @@
   <title>KOONA LOTO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ? ??????? ?? CDN ??????????? -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
 
   <style>
@@ -81,6 +80,12 @@
       word-break: break-word;
     }
 
+    #koonaBalance {
+      font-size: 14px;
+      margin-top: 6px;
+      color: #333;
+    }
+
     @media (max-width: 500px) {
       .box {
         width: 100%;
@@ -113,6 +118,7 @@
     <input type="text" id="playerName" placeholder="Your Name" />
     <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
     <p id="walletAddress"></p>
+    <p id="koonaBalance"></p>
     <button id="depositBtn" onclick="depositTokens()">Deposit KOONA</button>
     <button id="withdrawBtn" onclick="withdrawTokens()">Withdraw KOONA</button>
     <button id="playBtn" onclick="goToNextStage()">Start Game</button>
@@ -152,6 +158,11 @@
         tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
         gameContract = new ethers.Contract(contractAddress, contractABI, signer);
         decimals = await tokenContract.decimals();
+
+        // ?? ????? ?????? KOONA
+        const balance = await tokenContract.balanceOf(userAddress);
+        const formatted = ethers.utils.formatUnits(balance, decimals);
+        document.getElementById("koonaBalance").innerText = "KOONA Balance: " + formatted;
 
       } catch (err) {
         console.error("Connect Error:", err);
