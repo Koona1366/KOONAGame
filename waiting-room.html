@@ -84,9 +84,6 @@
   <h1>Waiting for Players...</h1>
   <p>Players joined: <span id="count">0</span> / 6</p>
 
-  <!-- ?? ????? ???????? -->
-  <p id="loadingMessage" style="color: white; font-size: 18px;">Loading players, please wait...</p>
-
   <div class="player-list" id="playerList"></div>
 
   <!-- Firebase Scripts -->
@@ -134,14 +131,6 @@
         const playerKeys = Object.keys(players);
         document.getElementById("count").innerText = playerKeys.length;
 
-        // ?? ?????/????????? ????? ??????
-        const loadingMessage = document.getElementById("loadingMessage");
-        if (playerKeys.length === 0) {
-          loadingMessage.style.display = "block";
-        } else {
-          loadingMessage.style.display = "none";
-        }
-
         const container = document.getElementById("playerList");
         container.innerHTML = "";
 
@@ -165,9 +154,15 @@
       });
     }
 
+    // ? ????? ????? ??????? ?? ??? ?????? ?? ??? ???? joinRoom ???? ??? ??????
     window.onload = () => {
-      joinRoom();
-      listenPlayers();
+      const playerRef = db.ref(`rooms/${roomId}/players/${user.wallet}`);
+      playerRef.once("value", snapshot => {
+        if (!snapshot.exists()) {
+          joinRoom();
+        }
+        listenPlayers();
+      });
     };
   </script>
 </body>
