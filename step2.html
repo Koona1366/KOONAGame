@@ -77,7 +77,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <script>
-    // ??????? Firebase ???? ?? ????? ????
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -100,19 +99,22 @@
       const avatar = localStorage.getItem("profileImage") || `https://i.pravatar.cc/60?u=${Math.random()}`;
 
       const roomRef = db.ref(`rooms/${tableId}`);
+
       roomRef.set({
         amount,
         createdAt: Date.now()
+      }).then(() => {
+        return db.ref(`rooms/${tableId}/players/${wallet}`).set({
+          name,
+          avatar,
+          joinedAt: Date.now()
+        });
+      }).then(() => {
+        window.location.href = `waiting-room.html?room=${tableId}`;
+      }).catch(err => {
+        alert("??? ?? ????? ???: " + err.message);
+        console.error(err);
       });
-
-      db.ref(`rooms/${tableId}/players/${wallet}`).set({
-        name,
-        avatar,
-        joinedAt: Date.now()
-      });
-
-      // ???? ?? ???? ?????? ?? ??????? ???
-      window.location.href = `waiting-room.html?room=${tableId}`;
     }
   </script>
 </body>
