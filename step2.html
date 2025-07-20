@@ -37,10 +37,6 @@
       border: 1px solid #ccc;
     }
 
-    .table-list {
-      margin-top: 30px;
-    }
-
     @media (max-width: 500px) {
       .container {
         padding: 20px 15px;
@@ -73,18 +69,20 @@
     <button onclick="createTable()">Create Table (5% fee)</button>
   </div>
 
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <script>
+    // ???????? ????? ????? Firebase (?????? waiting-room)
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "APP_ID"
+      apiKey: "AIzaSyBRu2bJqEq1Pu9lIdvGWQIahsZWb4o-NxE",
+      authDomain: "koonagame-799d8.firebaseapp.com",
+      databaseURL: "https://koonagame-799d8-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "koonagame-799d8",
+      storageBucket: "koonagame-799d8.appspot.com",
+      messagingSenderId: "601068063540",
+      appId: "1:601068063540:web:458fe463258627e8fdb361"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -98,23 +96,22 @@
       const name = localStorage.getItem("playerName") || "Player";
       const avatar = localStorage.getItem("profileImage") || `https://i.pravatar.cc/60?u=${Math.random()}`;
 
+      // ??? ??????? ???
       const roomRef = db.ref(`rooms/${tableId}`);
-
       roomRef.set({
         amount,
         createdAt: Date.now()
-      }).then(() => {
-        return db.ref(`rooms/${tableId}/players/${wallet}`).set({
-          name,
-          avatar,
-          joinedAt: Date.now()
-        });
-      }).then(() => {
-        window.location.href = `waiting-room.html?room=${tableId}`;
-      }).catch(err => {
-        alert("??? ?? ????? ???: " + err.message);
-        console.error(err);
       });
+
+      // ??? ??????? ?????? ??????
+      db.ref(`rooms/${tableId}/players/${wallet}`).set({
+        name,
+        avatar,
+        joinedAt: Date.now()
+      });
+
+      // ???? ?? ???? ??????
+      window.location.href = `waiting-room.html?room=${tableId}`;
     }
   </script>
 </body>
