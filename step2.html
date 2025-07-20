@@ -74,7 +74,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <script>
-    // ???????? ????? ????? Firebase (?????? waiting-room)
     const firebaseConfig = {
       apiKey: "AIzaSyBRu2bJqEq1Pu9lIdvGWQIahsZWb4o-NxE",
       authDomain: "koonagame-799d8.firebaseapp.com",
@@ -96,22 +95,30 @@
       const name = localStorage.getItem("playerName") || "Player";
       const avatar = localStorage.getItem("profileImage") || `https://i.pravatar.cc/60?u=${Math.random()}`;
 
-      // ??? ??????? ???
+      if (!wallet || !name) {
+        alert("Please connect your wallet and enter name first.");
+        return;
+      }
+
       const roomRef = db.ref(`rooms/${tableId}`);
       roomRef.set({
         amount,
         createdAt: Date.now()
+      }).then(() => {
+        db.ref(`rooms/${tableId}/players/${wallet}`).set({
+          name,
+          avatar,
+          joinedAt: Date.now()
+        }).then(() => {
+          window.location.href = `waiting-room.html?room=${tableId}`;
+        }).catch((err) => {
+          console.error("Error adding player to room:", err);
+          alert("Error adding player.");
+        });
+      }).catch((err) => {
+        console.error("Error creating room:", err);
+        alert("Error creating table.");
       });
-
-      // ??? ??????? ?????? ??????
-      db.ref(`rooms/${tableId}/players/${wallet}`).set({
-        name,
-        avatar,
-        joinedAt: Date.now()
-      });
-
-      // ???? ?? ???? ??????
-      window.location.href = `waiting-room.html?room=${tableId}`;
     }
   </script>
 </body>
