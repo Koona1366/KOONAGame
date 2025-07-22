@@ -13,19 +13,16 @@
       text-align: center;
       color: #333;
     }
-
     h1 {
       font-size: 32px;
       color: #fff;
       margin-bottom: 10px;
     }
-
     p {
       font-size: 18px;
       margin-bottom: 20px;
       color: #fff;
     }
-
     .player-list {
       display: flex;
       flex-wrap: wrap;
@@ -33,7 +30,6 @@
       gap: 16px;
       margin-top: 20px;
     }
-
     .player-card {
       background-color: #fff;
       border-radius: 12px;
@@ -44,7 +40,6 @@
       flex-direction: column;
       align-items: center;
     }
-
     .player-card img {
       width: 60px;
       height: 60px;
@@ -52,41 +47,20 @@
       margin-bottom: 8px;
       border: 2px solid #FBA92C;
     }
-
     .player-card span {
       font-weight: bold;
       font-size: 14px;
       color: #444;
       word-break: break-word;
     }
-
-    @media (max-width: 600px) {
-      .player-card {
-        width: 80px;
-      }
-
-      .player-card img {
-        width: 50px;
-        height: 50px;
-      }
-
-      h1 {
-        font-size: 26px;
-      }
-
-      p {
-        font-size: 16px;
-      }
-    }
   </style>
 </head>
 <body>
   <h1>Waiting for Players...</h1>
   <p>Players joined: <span id="count">0</span> / 6</p>
-
   <div class="player-list" id="playerList"></div>
 
-  <!-- Firebase Scripts -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -104,8 +78,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get("room") || "room_1";
+    const roomId = new URLSearchParams(window.location.search).get("room") || "room_1";
     const maxPlayers = 6;
 
     const user = {
@@ -145,19 +118,34 @@
           container.appendChild(div);
         });
 
-        if (playerKeys.length >= maxPlayers) {
+        // Game start trigger
+        if (playerKeys.length === maxPlayers) {
+          db.ref(`rooms/${roomId}/gameStarted`).once("value", snap => {
+            if (!snap.exists()) {
+              db.ref(`rooms/${roomId}/gameStarted`).set(Date.now());
+              generateInitialBalls(); // only once
+            }
+          });
+
+          // redirect all
           setTimeout(() => {
-            alert("Game ready! Redirecting...");
-            window.location.href = "game.html";
+            window.location.href = `game.html?room=${roomId}`;
           }, 1000);
         }
       });
     }
 
-    // ???? ?????????: ??????? ?? ???? ??? ????? ? ????? ????
+    // Random numbers (1-90) for draw (lottery style)
+    function generateInitialBalls() {
+      const balls = Array.from({ length: 90 }, (_, i) => i + 1);
+      const shuffled = balls.sort(() => Math.random() - 0.5);
+      db.ref(`rooms/${roomId}/balls`).set(shuffled);
+    }
+
+    // Entry point
     window.onload = () => {
       if (!user.wallet || user.wallet === "UnknownWallet") {
-        alert("Wallet not connected properly!");
+        alert("Wallet not connected!");
         return;
       }
 

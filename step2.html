@@ -1,7 +1,8 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>KOONA - Join a Table</title>
+  <title>KOONA - Create Table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
@@ -10,61 +11,64 @@
       background-color: #FBA92C;
       padding: 20px;
       color: #333;
-    }.container {
-  max-width: 400px;
-  margin: auto;
-  background: white;
-  padding: 25px 20px;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-h1 {
-  text-align: center;
-  color: #e65100;
-  margin-bottom: 20px;
-}
-
-select, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 16px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.table-list {
-  margin-top: 30px;
-}
-
-.table-item {
-  background: #fff;
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 25px 20px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    h1 {
+      text-align: center;
+      color: #e65100;
+      margin-bottom: 20px;
+    }
+    select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    .table-list {
+      margin-top: 30px;
+    }
+    .table-item {
+      background: #fff;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Create or Join a Table</h1><select id="amount">
-  <option value="100">100 KOONA</option>
-  <option value="200">200 KOONA</option>
-  <option value="500">500 KOONA</option>
-  <option value="1000">1000 KOONA</option>
-  <option value="5000">5000 KOONA</option>
-  <option value="10000">10000 KOONA</option>
-</select>
+    <h1>Create or Join a Table</h1>
 
-<button onclick="createTable()">Create Table (5% fee)</button>
+    <select id="amount">
+      <option value="100">100 KOONA</option>
+      <option value="200">200 KOONA</option>
+      <option value="500">500 KOONA</option>
+      <option value="1000">1000 KOONA</option>
+      <option value="5000">5000 KOONA</option>
+      <option value="10000">10000 KOONA</option>
+    </select>
 
-<div class="table-list" id="tableList"></div>
+    <button onclick="createTable()">Create Table (5% fee)</button>
 
-  </div>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>  <script>
+    <div class="table-list" id="tableList"></div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBRu2bJqEq1Pu9lIdvGWQIahsZWb4o-NxE",
       authDomain: "koonagame-799d8.firebaseapp.com",
@@ -74,7 +78,6 @@ select, button {
       messagingSenderId: "601068063540",
       appId: "1:601068063540:web:458fe463258627e8fdb361"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -82,23 +85,35 @@ select, button {
     const name = localStorage.getItem("playerName") || "Player";
     const avatar = localStorage.getItem("profileImage") || `https://i.pravatar.cc/60?u=${Math.random()}`;
 
-    function createTable() {
+    async function createTable() {
       const amount = parseInt(document.getElementById("amount").value);
       const tableId = "room_" + Date.now();
 
-      const roomRef = db.ref(`rooms/${tableId}`);
-      roomRef.set({
-        amount,
-        createdAt: Date.now()
-      });
+      if (!wallet || wallet === "UnknownWallet") {
+        alert("Connect wallet before creating a table!");
+        return;
+      }
 
-      db.ref(`rooms/${tableId}/players/${wallet}`).set({
-        name,
-        avatar,
-        joinedAt: Date.now()
-      });
+      try {
+        await db.ref(`rooms/${tableId}`).set({
+          amount,
+          createdAt: Date.now(),
+          started: false
+        });
 
-      window.location.href = `waiting-room.html?room=${tableId}`;
+        await db.ref(`rooms/${tableId}/players/${wallet}`).set({
+          name,
+          avatar,
+          joinedAt: Date.now()
+        });
+
+        db.ref(`rooms/${tableId}/players/${wallet}`).onDisconnect().remove();
+
+        window.location.href = `waiting-room.html?room=${tableId}`;
+      } catch (err) {
+        console.error("Error creating table:", err);
+        alert("Failed to create table.");
+      }
     }
 
     function loadTables() {
@@ -108,29 +123,36 @@ select, button {
         tableList.innerHTML = "";
 
         Object.entries(data).forEach(([id, info]) => {
+          if (info.started) return;
+
           db.ref(`rooms/${id}/players`).once("value", snap => {
             const players = snap.val() || {};
             const count = Object.keys(players).length;
 
-            if (count < 6) {
-              const div = document.createElement("div");
-              div.className = "table-item";
-              div.innerText = `${id} - ${info.amount} KOONA - Players: ${count}/6`;
-              div.onclick = () => {
-                db.ref(`rooms/${id}/players/${wallet}`).set({
-                  name,
-                  avatar,
-                  joinedAt: Date.now()
-                });
-                window.location.href = `waiting-room.html?room=${id}`;
-              };
-              tableList.appendChild(div);
-            }
+            if (count >= 6) return;
+            if (players[wallet]) return; // already joined
+
+            const div = document.createElement("div");
+            div.className = "table-item";
+            div.innerText = `${id} - ${info.amount} KOONA - Players: ${count}/6`;
+
+            div.onclick = async () => {
+              await db.ref(`rooms/${id}/players/${wallet}`).set({
+                name,
+                avatar,
+                joinedAt: Date.now()
+              });
+              db.ref(`rooms/${id}/players/${wallet}`).onDisconnect().remove();
+              window.location.href = `waiting-room.html?room=${id}`;
+            };
+
+            tableList.appendChild(div);
           });
         });
       });
     }
 
     loadTables();
-  </script></body>
+  </script>
+</body>
 </html>

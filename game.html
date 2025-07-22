@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8" />
   <title>KOONA LOTO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -141,6 +140,17 @@
       cursor: pointer;
       font-size: 13px;
     }
+    #rewardBox {
+      margin-top: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      width: fit-content;
+      margin-inline: auto;
+      color: #000;
+      font-weight: bold;
+      border: 2px solid #1e88e5;
+    }
     @media (max-width: 500px) {
       h1 { font-size: 22px; }
       .ball { width: 32px; height: 32px; font-size: 14px; }
@@ -154,7 +164,8 @@
   <h1>KOONA LOTO</h1>
   <div class="player-profiles" id="players"></div>
   <div class="balls-container" id="balls"></div>
-  <div class="cards-wrapper" id="cards"></div>  <script>
+  <div class="cards-wrapper" id="cards"></div>
+  <div id="rewardBox"></div>  <script>
     const playerNames = ["You", "Samin", "Farid", "Lale", "Yara", "Navid"];
     const playerId = 0;
     let lightsMap = {};
@@ -162,6 +173,8 @@
     let drawnNumbers = [];
     let allNumbers = Array.from({ length: 90 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
     let gameOver = false;
+    const entryFee = 1000; // example entry fee per player
+    const totalPlayers = 6;
 
     function renderPlayers() {
       const container = document.getElementById("players");
@@ -258,21 +271,28 @@
             if (count <= 2) {
               document.getElementById(`p${playerId}-l${count}`).classList.add("on");
             }
-            let okBtn = cardDiv.querySelector(".ok-btn");
-            if (!okBtn) {
-              okBtn = document.createElement("button");
-              okBtn.className = "ok-btn";
-              okBtn.textContent = "OK";
-              okBtn.onclick = () => okBtn.remove();
-              cardDiv.appendChild(okBtn);
-            }
             if (lightsMap[playerId] === 3) {
               gameOver = true;
-              alert("?? Game Over! You completed all rows.");
+              calculateRewards();
             }
           }
         });
       });
+    }
+
+    function calculateRewards() {
+      const totalPool = entryFee * totalPlayers;
+      const firstPrize = (entryFee * 2) * 0.95;
+      const secondPrize = entryFee * 0.97;
+      const fee = totalPool - (firstPrize + secondPrize);
+
+      const box = document.getElementById("rewardBox");
+      box.innerHTML = `
+        <p>?? Game Over!</p>
+        <p>?? First Prize (You): ${firstPrize} KOONA</p>
+        <p>?? Second Prize: ${secondPrize} KOONA</p>
+        <p>?? Fee sent to owner: ${fee.toFixed(2)} KOONA</p>
+      `;
     }
 
     function showNextBall() {
