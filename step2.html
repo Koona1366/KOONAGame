@@ -64,11 +64,12 @@
     <div class="table-list" id="tableList"></div>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <script>
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBRu2bJqEq1Pu9lIdvGWQIahsZWb4o-NxE",
       authDomain: "koonagame-799d8.firebaseapp.com",
@@ -81,24 +82,25 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Get user data
     const wallet = localStorage.getItem("walletAddress") || "UnknownWallet";
     const name = localStorage.getItem("playerName") || "Player";
     const avatar = localStorage.getItem("profileImage") || `https://i.pravatar.cc/60?u=${Math.random()}`;
 
+    // Create table function
     async function createTable() {
       const amount = parseInt(document.getElementById("amount").value);
       const tableId = "room_" + Date.now();
 
       if (!wallet || wallet === "UnknownWallet") {
-        alert("Connect wallet before creating a table!");
+        alert("Wallet not connected!");
         return;
       }
 
       try {
         await db.ref(`rooms/${tableId}`).set({
           amount,
-          createdAt: Date.now(),
-          started: false
+          createdAt: Date.now()
         });
 
         await db.ref(`rooms/${tableId}/players/${wallet}`).set({
@@ -107,15 +109,14 @@
           joinedAt: Date.now()
         });
 
-        db.ref(`rooms/${tableId}/players/${wallet}`).onDisconnect().remove();
-
         window.location.href = `waiting-room.html?room=${tableId}`;
       } catch (err) {
-        console.error("Error creating table:", err);
-        alert("Failed to create table.");
+        console.error("Create Table Error:", err);
+        alert("Something went wrong creating the table.");
       }
     }
 
+    // Load existing tables
     function loadTables() {
       db.ref("rooms").on("value", snapshot => {
         const data = snapshot.val() || {};
@@ -123,36 +124,33 @@
         tableList.innerHTML = "";
 
         Object.entries(data).forEach(([id, info]) => {
-          if (info.started) return;
-
           db.ref(`rooms/${id}/players`).once("value", snap => {
             const players = snap.val() || {};
             const count = Object.keys(players).length;
 
-            if (count >= 6) return;
-            if (players[wallet]) return; // already joined
+            if (count < 6) {
+              const div = document.createElement("div");
+              div.className = "table-item";
+              div.innerText = `${id} - ${info.amount} KOONA - Players: ${count}/6`;
 
-            const div = document.createElement("div");
-            div.className = "table-item";
-            div.innerText = `${id} - ${info.amount} KOONA - Players: ${count}/6`;
+              div.onclick = async () => {
+                await db.ref(`rooms/${id}/players/${wallet}`).set({
+                  name,
+                  avatar,
+                  joinedAt: Date.now()
+                });
+                window.location.href = `waiting-room.html?room=${id}`;
+              };
 
-            div.onclick = async () => {
-              await db.ref(`rooms/${id}/players/${wallet}`).set({
-                name,
-                avatar,
-                joinedAt: Date.now()
-              });
-              db.ref(`rooms/${id}/players/${wallet}`).onDisconnect().remove();
-              window.location.href = `waiting-room.html?room=${id}`;
-            };
-
-            tableList.appendChild(div);
+              tableList.appendChild(div);
+            }
           });
         });
       });
     }
 
-    loadTables();
+    // Run on page load
+    window.onload = loadTables;
   </script>
 </body>
 </html>

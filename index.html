@@ -56,7 +56,11 @@
       font-weight: bold;
     }
 
-    input[type="file"], input[type="text"] {
+    input[type="file"] {
+      margin-bottom: 15px;
+    }
+
+    input[type="text"] {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -79,25 +83,12 @@
     #depositBtn { background: #43a047; color: white; }
     #withdrawBtn { background: #e65100; color: white; }
     #playBtn { background: #4caf50; color: white; font-weight: bold; }
-    #withdrawGameBtn { background: #d32f2f; color: white; }
 
     #walletAddress {
       font-size: 12px;
       margin-top: 8px;
       color: #555;
       word-break: break-word;
-    }
-
-    @media (max-width: 500px) {
-      .box {
-        width: 100%;
-        padding: 20px 15px;
-        border-radius: 12px;
-      }
-      h1 { font-size: 22px; }
-      .profile-balance { flex-direction: column; gap: 8px; }
-      .profile-balance img { width: 80px; height: 80px; }
-      input, button { font-size: 14px; padding: 10px; }
     }
   </style>
 </head>
@@ -111,20 +102,16 @@
 
     <input type="file" accept="image/*" onchange="uploadImage(event)" />
     <input type="text" id="playerName" placeholder="Your Name" />
-    <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+    <button id="connectBtn">Connect Wallet</button>
     <p id="walletAddress"></p>
-
-    <button id="depositBtn" onclick="depositTokens()">Deposit KOONA</button>
-    <button id="withdrawGameBtn" onclick="withdrawGameBalance()">Withdraw Game Balance</button>
-    <button id="playBtn" onclick="goToNextStage()">Start Game</button>
+    <button id="depositBtn">Deposit KOONA</button>
+    <button id="withdrawBtn">Withdraw KOONA</button>
+    <button id="playBtn">Start Game</button>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
   <script>
     const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";
     const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4";
-    const ownerWallet = "0x3C126D42EfdA7250aB2d6c1669ad90D4e2726Ca6";
 
     const tokenABI = [
       "function balanceOf(address) view returns (uint256)",
@@ -136,25 +123,10 @@
       "function withdraw(uint256 amount) public"
     ];
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBRu2bJqEq1Pu9lIdvGWQIahsZWb4o-NxE",
-      authDomain: "koonagame-799d8.firebaseapp.com",
-      databaseURL: "https://koonagame-799d8-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "koonagame-799d8",
-      storageBucket: "koonagame-799d8.appspot.com",
-      messagingSenderId: "601068063540",
-      appId: "1:601068063540:web:458fe463258627e8fdb361"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
     let provider, signer, userAddress, tokenContract, gameContract, decimals;
 
     async function connectWallet() {
-      if (typeof window.ethereum === 'undefined') {
-        alert("MetaMask not found. Please install MetaMask.");
-        return;
-      }
+      if (!window.ethereum) return alert("MetaMask not found.");
 
       try {
         provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -173,46 +145,35 @@
         const formatted = ethers.utils.formatUnits(balance, decimals);
         document.getElementById("koonaBalance").innerText = "KOONA Balance: " + formatted;
       } catch (err) {
-        alert("Wallet connection failed. " + err.message);
+        alert("Connection failed: " + err.message);
       }
     }
 
     async function depositTokens() {
-      if (!signer) return alert("Connect wallet first.");
+      if (!signer || !decimals) return alert("Connect wallet first.");
       const amount = prompt("Enter amount to deposit:");
-      if (!amount) return;
+      if (!amount || isNaN(amount)) return;
       const amt = ethers.utils.parseUnits(amount, decimals);
-
       try {
         const approveTx = await tokenContract.approve(contractAddress, amt);
         await approveTx.wait();
         const depositTx = await gameContract.deposit(amt);
         await depositTx.wait();
-
-        // Save 95% for user, 5% to dev wallet
-        const net = Number(amount) * 0.95;
-        const fee = Number(amount) * 0.05;
-
-        await db.ref(`balances/${userAddress}`).set(Number(net.toFixed(2)));
-        alert(`Deposited: ${net} KOONA (5% fee sent)`);
-
+        alert("Deposit successful!");
       } catch (err) {
         alert("Deposit failed: " + err.message);
       }
     }
 
-    async function withdrawGameBalance() {
-      if (!signer) return alert("Connect wallet first.");
-      const snapshot = await db.ref(`balances/${userAddress}`).get();
-      const balance = snapshot.val();
-      if (!balance || balance <= 0) return alert("No game balance to withdraw.");
-
-      const amt = ethers.utils.parseUnits(balance.toString(), decimals);
+    async function withdrawTokens() {
+      if (!signer || !decimals) return alert("Connect wallet first.");
+      const amount = prompt("Enter amount to withdraw:");
+      if (!amount || isNaN(amount)) return;
+      const amt = ethers.utils.parseUnits(amount, decimals);
       try {
         const tx = await gameContract.withdraw(amt);
         await tx.wait();
-        await db.ref(`balances/${userAddress}`).set(0);
-        alert("Withdraw successful.");
+        alert("Withdraw successful!");
       } catch (err) {
         alert("Withdraw failed: " + err.message);
       }
@@ -237,6 +198,7 @@
       reader.readAsDataURL(file);
     }
 
+    // Attach buttons after page load
     window.addEventListener("load", () => {
       const savedImg = localStorage.getItem("profileImage");
       if (savedImg) document.getElementById("profileImage").src = savedImg;
@@ -248,6 +210,11 @@
       if (savedWallet) {
         document.getElementById("walletAddress").innerText = "Wallet: " + savedWallet;
       }
+
+      document.getElementById("connectBtn").onclick = connectWallet;
+      document.getElementById("depositBtn").onclick = depositTokens;
+      document.getElementById("withdrawBtn").onclick = withdrawTokens;
+      document.getElementById("playBtn").onclick = goToNextStage;
     });
   </script>
 </body>
