@@ -110,8 +110,8 @@
   </div>
 
   <script>
-    const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";
-    const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4";
+    const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";  // KOONA Token
+    const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4"; // Game contract
 
     const tokenABI = [
       "function balanceOf(address) view returns (uint256)",
@@ -212,6 +212,7 @@
       reader.readAsDataURL(file);
     }
 
+    // Restore saved data
     window.addEventListener("load", () => {
       const savedImg = localStorage.getItem("profileImage");
       if (savedImg) document.getElementById("profileImage").src = savedImg;
