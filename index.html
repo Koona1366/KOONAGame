@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>KOONA LOTO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -17,97 +15,123 @@
       height: 100vh;
       padding: 20px;
       color: #333;
-    }
-    .box {
-      background: white;
-      padding: 30px 20px;
-      border-radius: 20px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-      width: 350px;
-      max-width: 100%;
-      text-align: center;
-    }
-    h1 {
-      font-size: 28px;
-      color: #ff6d00;
-      margin-bottom: 20px;
-    }
-    .profile-balance {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-    .profile-balance img {
-      width: 100px;
-      height: 100px;
-      border-radius: 16px;
-      object-fit: cover;
-      border: 3px solid #ff9800;
-    }
-    .profile-balance span {
-      font-size: 14px;
-      color: #333;
-      font-weight: bold;
-    }
-    input[type="file"],
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      margin-bottom: 15px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 15px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    #connectBtn { background: #007bff; color: white; }
-    #depositBtn { background: #43a047; color: white; }
-    #withdrawBtn { background: #e65100; color: white; }
-    #playBtn { background: #4caf50; color: white; font-weight: bold; }
-    #walletStatus {
-      font-size: 12px;
-      margin-top: 8px;
-      color: #555;
-      word-break: break-word;
-    }
+    }.box {
+  background: white;
+  padding: 30px 20px;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 28px;
+  color: #ff6d00;
+  margin-bottom: 20px;
+}
+
+.profile-balance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.profile-balance img {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 3px solid #ff9800;
+}
+
+.profile-balance span {
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  text-align: left;
+}
+
+input[type="file"],
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#connectBtn { background: #007bff; color: white; }
+#depositBtn { background: #43a047; color: white; }
+#withdrawBtn { background: #e65100; color: white; }
+#playBtn { background: #4caf50; color: white; font-weight: bold; }
+
+#walletStatus {
+  font-size: 13px;
+  margin-top: 10px;
+  color: #1e88e5;
+  word-break: break-word;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+#walletStatus::before {
+  content: "\1F512"; /* lock icon */
+}
+
+@media (max-width: 400px) {
+  h1 { font-size: 24px; }
+  .profile-balance img {
+    width: 70px;
+    height: 70px;
+  }
+  button { font-size: 15px; padding: 12px; }
+}
+
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>KOONA LOTO</h1>
-    <div class="profile-balance">
-      <img id="profileImage" src="https://i.postimg.cc/RV3NnYML/avatar-default.png" alt="Avatar" />
-      <span id="koonaBalance">KOONA Balance: 0</span>
-    </div>
+    <h1>KOONA LOTO</h1><div class="profile-balance">
+  <img id="profileImage" src="https://i.postimg.cc/RV3NnYML/avatar-default.png" alt="Avatar" />
+  <span id="koonaBalance">KOONA Balance: 0</span>
+</div>
 
-    <input type="file" accept="image/*" onchange="uploadImage(event)" />
-    <input type="text" id="playerName" placeholder="Your Name" />
+<input type="file" accept="image/*" onchange="uploadImage(event)" />
+<input type="text" id="playerName" placeholder="Your Name" />
 
-    <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
-    <p id="walletStatus">Not connected</p>
+<button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+<p id="walletStatus">Not connected</p>
 
-    <button id="depositBtn" onclick="depositTokens()">Deposit KOONA</button>
-    <button id="withdrawBtn" onclick="withdrawTokens()">Withdraw KOONA</button>
-    <button id="playBtn" onclick="goToNextStage()">Start Game</button>
-  </div>
+<button id="depositBtn" onclick="depositTokens()">Deposit KOONA</button>
+<button id="withdrawBtn" onclick="withdrawTokens()">Withdraw KOONA</button>
+<button id="playBtn" onclick="goToNextStage()">Start Game</button>
 
-  <script>
+  </div>  <script>
     const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";
     const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4";
+
     const tokenABI = [
       "function balanceOf(address) view returns (uint256)",
       "function decimals() view returns (uint8)",
       "function approve(address spender, uint256 amount) returns (bool)"
     ];
+
     const gameABI = [
       "function deposit(uint256 amount) public",
       "function withdraw(uint256 amount) public"
@@ -116,23 +140,17 @@
     let provider, signer, userAddress, tokenContract, gameContract, decimals;
 
     async function connectWallet() {
+      if (!window.ethereum) {
+        alert("MetaMask not found. Please install it.");
+        return;
+      }
       try {
-        if (window.ethereum) {
-          provider = new ethers.providers.Web3Provider(window.ethereum);
-          await provider.send("eth_requestAccounts", []);
-        } else {
-          const wcProvider = new WalletConnectProvider.default({
-            rpc: { 56: "https://bsc-dataseed.binance.org/" },
-            chainId: 56
-          });
-          await wcProvider.enable();
-          provider = new ethers.providers.Web3Provider(wcProvider);
-        }
-
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
 
-        document.getElementById("walletStatus").innerText = "Wallet: " + userAddress;
+        document.getElementById("walletStatus").innerText = userAddress;
         localStorage.setItem("walletAddress", userAddress);
 
         tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
@@ -143,7 +161,7 @@
         const formatted = ethers.utils.formatUnits(balance, decimals);
         document.getElementById("koonaBalance").innerText = "KOONA Balance: " + formatted;
       } catch (err) {
-        alert("Connection failed: " + err.message);
+        alert("Connection error: " + err.message);
       }
     }
 
@@ -154,11 +172,14 @@
 
       const feeAmount = parseFloat(amount) * 0.95;
       const parsed = ethers.utils.parseUnits(feeAmount.toString(), decimals);
+
       try {
         const approveTx = await tokenContract.approve(contractAddress, parsed);
         await approveTx.wait();
+
         const depositTx = await gameContract.deposit(parsed);
         await depositTx.wait();
+
         alert("Deposit successful!");
       } catch (err) {
         alert("Deposit failed: " + err.message);
@@ -169,6 +190,7 @@
       if (!signer) return alert("Connect wallet first.");
       const amount = prompt("Enter amount to withdraw:");
       if (!amount) return;
+
       const parsed = ethers.utils.parseUnits(amount, decimals);
       try {
         const tx = await gameContract.withdraw(parsed);
@@ -185,6 +207,7 @@
         alert("Enter name and connect wallet.");
         return;
       }
+
       localStorage.setItem("playerName", name);
       localStorage.setItem("walletAddress", userAddress);
       window.location.href = "step2.html";
@@ -204,11 +227,12 @@
     window.addEventListener("load", () => {
       const savedImg = localStorage.getItem("profileImage");
       if (savedImg) document.getElementById("profileImage").src = savedImg;
+
       const savedName = localStorage.getItem("playerName");
       if (savedName) document.getElementById("playerName").value = savedName;
+
       const savedWallet = localStorage.getItem("walletAddress");
-      if (savedWallet) document.getElementById("walletStatus").innerText = "Wallet: " + savedWallet;
+      if (savedWallet) document.getElementById("walletStatus").innerText = savedWallet;
     });
-  </script>
-</body>
+  </script></body>
 </html>
