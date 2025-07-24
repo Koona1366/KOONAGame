@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>KOONA LOTO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -110,8 +110,8 @@
   </div>
 
   <script>
-    const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";
-    const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4";
+    const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";  // KOONA Token
+    const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4"; // Game contract
 
     const tokenABI = [
       "function balanceOf(address) view returns (uint256)",
@@ -127,29 +127,29 @@
     let provider, signer, userAddress, tokenContract, gameContract, decimals;
 
     async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-          await provider.send("eth_requestAccounts", []);
-          signer = provider.getSigner();
-          userAddress = await signer.getAddress();
+      if (!window.ethereum) {
+        alert("MetaMask not found. Please install it.");
+        return;
+      }
 
-          document.getElementById("walletStatus").innerText = "Wallet: " + userAddress;
-          localStorage.setItem("walletAddress", userAddress);
+      try {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
 
-          tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
-          gameContract = new ethers.Contract(contractAddress, gameABI, signer);
+        document.getElementById("walletStatus").innerText = "Wallet: " + userAddress;
+        localStorage.setItem("walletAddress", userAddress);
 
-          decimals = await tokenContract.decimals();
-          const balance = await tokenContract.balanceOf(userAddress);
-          const formatted = ethers.utils.formatUnits(balance, decimals);
-          document.getElementById("koonaBalance").innerText = "KOONA Balance: " + formatted;
-        } catch (err) {
-          alert("Connection error: " + err.message);
-        }
-      } else {
-        alert("MetaMask not found. Please install MetaMask app.");
-        window.open("https://metamask.app.link/dapp/" + window.location.hostname, "_blank");
+        tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+        gameContract = new ethers.Contract(contractAddress, gameABI, signer);
+
+        decimals = await tokenContract.decimals();
+        const balance = await tokenContract.balanceOf(userAddress);
+        const formatted = ethers.utils.formatUnits(balance, decimals);
+        document.getElementById("koonaBalance").innerText = "KOONA Balance: " + formatted;
+      } catch (err) {
+        alert("Connection error: " + err.message);
       }
     }
 
@@ -212,6 +212,7 @@
       reader.readAsDataURL(file);
     }
 
+    // Restore saved data
     window.addEventListener("load", () => {
       const savedImg = localStorage.getItem("profileImage");
       if (savedImg) document.getElementById("profileImage").src = savedImg;
