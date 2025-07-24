@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>KOONA LOTO</title>
@@ -15,116 +16,102 @@
       height: 100vh;
       padding: 20px;
       color: #333;
-    }.box {
-  background: white;
-  padding: 30px 20px;
-  border-radius: 20px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
+    }
 
-h1 {
-  font-size: 28px;
-  color: #ff6d00;
-  margin-bottom: 20px;
-}
+    .box {
+      background: white;
+      padding: 30px 20px;
+      border-radius: 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      width: 350px;
+      max-width: 100%;
+      text-align: center;
+    }
 
-.profile-balance {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-}
+    h1 {
+      font-size: 28px;
+      color: #ff6d00;
+      margin-bottom: 20px;
+    }
 
-.profile-balance img {
-  width: 80px;
-  height: 80px;
-  border-radius: 16px;
-  object-fit: cover;
-  border: 3px solid #ff9800;
-}
+    .profile-balance {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
 
-.profile-balance span {
-  font-size: 16px;
-  color: #333;
-  font-weight: bold;
-  text-align: left;
-}
+    .profile-balance img {
+      width: 100px;
+      height: 100px;
+      border-radius: 16px;
+      object-fit: cover;
+      border: 3px solid #ff9800;
+    }
 
-input[type="file"],
-input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 15px;
-}
+    .profile-balance span {
+      font-size: 14px;
+      color: #333;
+      font-weight: bold;
+    }
 
-button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  font-size: 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
+    input[type="file"],
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+    }
 
-#connectBtn { background: #007bff; color: white; }
-#depositBtn { background: #43a047; color: white; }
-#withdrawBtn { background: #e65100; color: white; }
-#playBtn { background: #4caf50; color: white; font-weight: bold; }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
 
-#walletStatus {
-  font-size: 13px;
-  margin-top: 10px;
-  color: #1e88e5;
-  word-break: break-word;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-#walletStatus::before {
-  content: "\1F512"; /* lock icon */
-}
+    #connectBtn { background: #007bff; color: white; }
+    #depositBtn { background: #43a047; color: white; }
+    #withdrawBtn { background: #e65100; color: white; }
+    #playBtn { background: #4caf50; color: white; font-weight: bold; }
 
-@media (max-width: 400px) {
-  h1 { font-size: 24px; }
-  .profile-balance img {
-    width: 70px;
-    height: 70px;
-  }
-  button { font-size: 15px; padding: 12px; }
-}
-
+    #walletStatus {
+      font-size: 12px;
+      margin-top: 8px;
+      color: #555;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>KOONA LOTO</h1><div class="profile-balance">
-  <img id="profileImage" src="https://i.postimg.cc/RV3NnYML/avatar-default.png" alt="Avatar" />
-  <span id="koonaBalance">KOONA Balance: 0</span>
-</div>
+    <h1>KOONA LOTO</h1>
 
-<input type="file" accept="image/*" onchange="uploadImage(event)" />
-<input type="text" id="playerName" placeholder="Your Name" />
+    <div class="profile-balance">
+      <img id="profileImage" src="https://i.postimg.cc/RV3NnYML/avatar-default.png" alt="Avatar" />
+      <span id="koonaBalance">KOONA Balance: 0</span>
+    </div>
 
-<button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
-<p id="walletStatus">Not connected</p>
+    <input type="file" accept="image/*" onchange="uploadImage(event)" />
+    <input type="text" id="playerName" placeholder="Your Name" />
 
-<button id="depositBtn" onclick="depositTokens()">Deposit KOONA</button>
-<button id="withdrawBtn" onclick="withdrawTokens()">Withdraw KOONA</button>
-<button id="playBtn" onclick="goToNextStage()">Start Game</button>
+    <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+    <p id="walletStatus">Not connected</p>
 
-  </div>  <script>
-    const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";
-    const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4";
+    <button id="depositBtn" onclick="depositTokens()">Deposit KOONA</button>
+    <button id="withdrawBtn" onclick="withdrawTokens()">Withdraw KOONA</button>
+    <button id="playBtn" onclick="goToNextStage()">Start Game</button>
+  </div>
+
+  <script>
+    const tokenAddress = "0xC52F0CEeBc2904D56dF6Ca53cbE3BB9a428De686";  // KOONA Token
+    const contractAddress = "0x7b31A245EC98B9D61D6f6C653D77388CCdbFD3d4"; // Game Contract
 
     const tokenABI = [
       "function balanceOf(address) view returns (uint256)",
@@ -141,16 +128,22 @@ button {
 
     async function connectWallet() {
       if (!window.ethereum) {
-        alert("MetaMask not found. Please install it.");
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+          window.location.href = "https://metamask.app.link/dapp/" + window.location.href.replace(/^https?:\/\//, '');
+        } else {
+          alert("MetaMask not found. Please install it.");
+        }
         return;
       }
+
       try {
         provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
 
-        document.getElementById("walletStatus").innerText = userAddress;
+        document.getElementById("walletStatus").innerText = "Wallet: " + userAddress;
         localStorage.setItem("walletAddress", userAddress);
 
         tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
@@ -224,6 +217,7 @@ button {
       reader.readAsDataURL(file);
     }
 
+    // Restore saved data
     window.addEventListener("load", () => {
       const savedImg = localStorage.getItem("profileImage");
       if (savedImg) document.getElementById("profileImage").src = savedImg;
@@ -232,7 +226,8 @@ button {
       if (savedName) document.getElementById("playerName").value = savedName;
 
       const savedWallet = localStorage.getItem("walletAddress");
-      if (savedWallet) document.getElementById("walletStatus").innerText = savedWallet;
+      if (savedWallet) document.getElementById("walletStatus").innerText = "Wallet: " + savedWallet;
     });
-  </script></body>
+  </script>
+</body>
 </html>
